@@ -2,40 +2,50 @@ import ctypes
 import enum
 import logging
 
-logging.basicConfig(format="[%(asctime)s][%(relativeCreated)07dms][%(levelname)s][%(processName)s:%(threadName)s:%(name)s.%(funcName)s]:\t%(message)s", level=logging.DEBUG)
+logging.basicConfig(
+	format=
+	"[%(asctime)s][%(relativeCreated)07dms][%(levelname)s][%(processName)s:%(threadName)s:%(name)s.%(funcName)s]:\t%(message)s",
+	level=logging.DEBUG)
 
 
 class JOYSTICK_POSITION_V2(ctypes.Structure):
 	_fields_ = [
-	    ('bDevice', ctypes.c_byte),
-	    ('wThrottle', ctypes.c_long),
-	    ('wRudder', ctypes.c_long),
-	    ('wAileron', ctypes.c_long),
-	    ('wAxisX', ctypes.c_long),
-	    ('wAxisY', ctypes.c_long),
-	    ('wAxisZ', ctypes.c_long),
-	    ('wAxisXRot', ctypes.c_long),
-	    ('wAxisYRot', ctypes.c_long),
-	    ('wAxisZRot', ctypes.c_long),
-	    ('wSlider', ctypes.c_long),
-	    ('wDial', ctypes.c_long),
-	    ('wWheel', ctypes.c_long),
-	    ('wAxisVX', ctypes.c_long),
-	    ('wAxisVY', ctypes.c_long),
-	    ('wAxisVZ', ctypes.c_long),
-	    ('wAxisVBRX', ctypes.c_long),
-	    ('wAxisVRBY', ctypes.c_long),
-	    ('wAxisVRBZ', ctypes.c_long),
-	    ('lButtons', ctypes.c_long),  # 32 buttons: 0x00000001 means button1 is pressed, 0x80000000 -> button32 is pressed
-	    ('bHats', ctypes.wintypes.DWORD),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch
-	    ('bHatsEx1', ctypes.wintypes.DWORD),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch
-	    ('bHatsEx2', ctypes.wintypes.DWORD),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch
-	    ('bHatsEx3', ctypes.wintypes.DWORD),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch LONG lButtonsEx1
+		('bDevice', ctypes.c_byte),
+		('wThrottle', ctypes.c_long),
+		('wRudder', ctypes.c_long),
+		('wAileron', ctypes.c_long),
+		('wAxisX', ctypes.c_long),
+		('wAxisY', ctypes.c_long),
+		('wAxisZ', ctypes.c_long),
+		('wAxisXRot', ctypes.c_long),
+		('wAxisYRot', ctypes.c_long),
+		('wAxisZRot', ctypes.c_long),
+		('wSlider', ctypes.c_long),
+		('wDial', ctypes.c_long),
+		('wWheel', ctypes.c_long),
+		('wAxisVX', ctypes.c_long),
+		('wAxisVY', ctypes.c_long),
+		('wAxisVZ', ctypes.c_long),
+		('wAxisVBRX', ctypes.c_long),
+		('wAxisVRBY', ctypes.c_long),
+		('wAxisVRBZ', ctypes.c_long),
+		(
+			'lButtons', ctypes.c_long
+		),  # 32 buttons: 0x00000001 means button1 is pressed, 0x80000000 -> button32 is pressed
+		('bHats', ctypes.wintypes.DWORD
+			),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch
+		('bHatsEx1', ctypes.wintypes.DWORD
+			),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch
+		('bHatsEx2', ctypes.wintypes.DWORD
+			),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch
+		(
+			'bHatsEx3', ctypes.wintypes.DWORD
+		),  # Lower 4 bits: HAT switch or 16-bit of continuous HAT switch LONG lButtonsEx1
 
-	    # JOYSTICK_POSITION_V2 Extension
-	    ('lButtonsEx1', ctypes.c_long),  # Buttons 33-64	
-	    ('lButtonsEx2', ctypes.c_long),  # Buttons 65-96
-	    ('lButtonsEx3', ctypes.c_long),  # Buttons 97-128
+		# JOYSTICK_POSITION_V2 Extension
+		('lButtonsEx1', ctypes.c_long),  # Buttons 33-64	
+		('lButtonsEx2', ctypes.c_long),  # Buttons 65-96
+		('lButtonsEx3', ctypes.c_long),  # Buttons 97-128
 	]
 
 
@@ -61,7 +71,8 @@ class VJDHIDUsage(enum.Enum):
 
 
 class VJoyInterface:
-	dll = ctypes.cdll.LoadLibrary(r"C:\Program Files\vJoy\x64\vJoyInterface.dll")
+	dll = ctypes.cdll.LoadLibrary(
+		r"C:\Program Files\vJoy\x64\vJoyInterface.dll")
 
 	@staticmethod
 	#	VJOYINTERFACE_API SHORT __cdecl GetvJoyVersion(void);
@@ -117,7 +128,7 @@ class VJoyInterface:
 		function = VJoyInterface.dll.GetvJoyMaxDevices
 		function.restype = ctypes.wintypes.BOOL
 		n = ctypes.c_int
-		result = function(byref(n))
+		result = function(ctypes.byref(n))
 		return result, n
 
 	@staticmethod
@@ -126,7 +137,7 @@ class VJoyInterface:
 		function = VJoyInterface.dll.GetNumberExistingVJD
 		function.restype = ctypes.wintypes.BOOL
 		n = ctypes.c_int
-		result = function(byref(n))
+		result = function(ctypes.byref(n))
 		return result, n
 #
 #
@@ -161,7 +172,9 @@ class VJoyInterface:
 		function = VJoyInterface.dll.GetVJDAxisMax
 		function.restype = ctypes.wintypes.BOOL
 		Max = ctypes.wintypes.LONG
-		result = function(ctypes.wintypes.UINT(rID), ctypes.wintypes.UINT(Axis), ctypes.byref(Max))
+		result = function(
+			ctypes.wintypes.UINT(rID), ctypes.wintypes.UINT(Axis),
+			ctypes.byref(Max))
 		return result, Max
 
 	@staticmethod
@@ -170,10 +183,13 @@ class VJoyInterface:
 		function = VJoyInterface.dll.GetVJDAxisMin
 		function.restype = ctypes.wintypes.BOOL
 		Min = ctypes.wintypes.LONG
-		result = function(ctypes.wintypes.UINT(rID), ctypes.wintypes.UINT(Axis), ctypes.byref(Min))
+		result = function(
+			ctypes.wintypes.UINT(rID), ctypes.wintypes.UINT(Axis),
+			ctypes.byref(Min))
 		return result, Min
-#	VJOYINTERFACE_API enum VjdStat	__cdecl	GetVJDStatus(UINT rID);			// Get the status of the specified vJoy Device.
 
+	@staticmethod
+	#	VJOYINTERFACE_API enum VjdStat	__cdecl	GetVJDStatus(UINT rID);			// Get the status of the specified vJoy Device.
 	def GetVJDStatus(rID):
 		function = VJoyInterface.dll.GetVJDAxisMin
 		result = function(ctypes.wintypes.UINT(rID))
@@ -272,7 +288,9 @@ class VJoyInterface:
 	def SetAxis(Value, rID, Axis):
 		function = VJoyInterface.dll.SetAxis
 		function.restype = ctypes.wintypes.BOOL
-		result = function(ctypes.wintypes.LONG(Value), ctypes.wintypes.UINT(rID), ctypes.wintypes.UINT(Axis))
+		result = function(
+			ctypes.wintypes.LONG(Value), ctypes.wintypes.UINT(rID),
+			ctypes.wintypes.UINT(Axis))
 		return result
 
 	@staticmethod
@@ -280,7 +298,9 @@ class VJoyInterface:
 	def SetBtn(Value, rID, nBtn):
 		function = VJoyInterface.dll.SetAxis
 		function.restype = ctypes.wintypes.BOOL
-		result = function(ctypes.wintypes.BOOL(Value), ctypes.wintypes.UINT(rID), ctypes.c_ubyte(Axis))
+		result = function(
+			ctypes.wintypes.BOOL(Value), ctypes.wintypes.UINT(rID),
+			ctypes.c_ubyte(Axis))
 		return result
 
 	@staticmethod
@@ -288,7 +308,9 @@ class VJoyInterface:
 	def SetDiscPov(Value, rID, nPov):
 		function = VJoyInterface.dll.SetDiscPov
 		function.restype = ctypes.wintypes.BOOL
-		result = function(ctypes.wintypes.INT(Value), ctypes.wintypes.UINT(rID), ctypes.c_ubyte(nPov))
+		result = function(
+			ctypes.wintypes.INT(Value), ctypes.wintypes.UINT(rID),
+			ctypes.c_ubyte(nPov))
 		return result
 
 	@staticmethod
@@ -296,7 +318,9 @@ class VJoyInterface:
 	def SetDiscPov(Value, rID, nPov):
 		function = VJoyInterface.dll.SetDiscPov
 		function.restype = ctypes.wintypes.BOOL
-		result = function(ctypes.wintypes.DWORD(Value), ctypes.wintypes.UINT(rID), ctypes.c_ubyte(nPov))
+		result = function(
+			ctypes.wintypes.DWORD(Value), ctypes.wintypes.UINT(rID),
+			ctypes.c_ubyte(nPov))
 		return result
 
 
@@ -311,25 +335,38 @@ class VJoyDevice:
 		Enter the runtime context related to this object. The with statement will bind this method’s return value to the target(s) specified in the as clause of the statement, if any.
 		"""
 		if VJoyInterface.vJoyEnabled():
-			logging.info("\nVendor:{0}\nProduct:{1}\nVersion Number:{2}".format(VJoyInterface.GetvJoyManufacturerString(), VJoyInterface.GetvJoyProductString(), VJoyInterface.GetvJoySerialNumberString()))
+			logging.info("\nVendor:{0}\nProduct:{1}\nVersion Number:{2}".format(
+				VJoyInterface.GetvJoyManufacturerString(),
+				VJoyInterface.GetvJoyProductString(),
+				VJoyInterface.GetvJoySerialNumberString()))
 			ok, dll_ver, drv_ver = VJoyInterface.DriverMatch()
 			if ok:
-				logging.info("\nvJoy dll version:{0}\nvJoy driver version:{1}".format(dll_ver, drv_ver))
+				logging.info(
+					"\nvJoy dll version:{0}\nvJoy driver version:{1}".format(
+						dll_ver, drv_ver))
 				status = VJoyInterface.GetVJDStatus(self.rID)
 				if status == VJDStatus.VJD_STAT_OWN:
 					pass
 				elif status == VJDStatus.VJD_STAT_FREE:
 					if not VJoyInterface.AcquireVJD(self.rID):
-						raise RunTimeError("Failed to acquire vJoy device number {0}.".format(self.rID))
+						raise RunTimeError(
+							"Failed to acquire vJoy device number {0}.".format(
+								self.rID))
 				else:
 					raise RuntimeError(status)
 			else:
-				raise RuntimeError("vJoyInterface DLL (version {0}) does not match vJoy Driver (version {0})".format(dll_ver, drv_ver))
+				raise RuntimeError(
+					"vJoyInterface DLL (version {0}) does not match vJoy Driver (version {0})"
+					.format(dll_ver, drv_ver))
 		else:
 			raise RuntimeError("vJoy not enabled.")
 
 	def get_available_axes(self):
-		return {hid_used for hid_used in list(VJDHIDUsage) if VJoyInterface.GetVJDAxisExist(self.rID, hid_used.value)}
+		return {
+			hid_used
+			for hid_used in list(VJDHIDUsage)
+			if VJoyInterface.GetVJDAxisExist(self.rID, hid_used.value)
+		}
 
 	def get_nof_buttons(self):
 		return VJoyInterface.GetVJDButtonNumber(self.rID)
