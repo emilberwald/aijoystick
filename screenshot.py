@@ -6,19 +6,7 @@ import numpy as np
 import mss
 import cv2
 
-LOG_FORMAT_STRING = '[%(asctime)s][%(relativeCreated)07dms][%(processName)s:%(threadName)s][%(name)s:%(levelname)s][%(pathname)s:%(lineno)s][%(funcName)s]\n\t%(message)s'
-STREAM_FORMATTER = logging.Formatter(LOG_FORMAT_STRING)
-STREAM_HANDLER = logging.StreamHandler()
-STREAM_HANDLER.setFormatter(STREAM_FORMATTER)
-HTML_FORMATTER = logging.Formatter(
-	fmt='<details>\n\t<summary><samp>' + LOG_FORMAT_STRING +
-	'</samp></summary>\n\t<div><div class="processName">%(processName)s</div><div class="process">%(process)s</div><div class="threadName">%(threadName)s</div><div class="thread">%(thread)s</div><div class="name">%(name)s</div><div class="levelname">%(levelname)s</div><div class="levelno">%(levelno)s</div><div class="created">%(created)s</div><div class="msecs">%(msecs)s</div><div class="asctime">%(asctime)s</div><div class="relativeCreated">%(relativeCreated)s</div><div class="pathname">%(pathname)s</div><div class="lineno">%(lineno)s</div><div class="filename">%(filename)s</div><div class="module">%(module)s</div><div class="funcName">%(funcName)s</div><div class="message">%(message)s</div></div>\n</details>'
-)
-HTML_HANDLER = logging.FileHandler(f'{__name__}_log.html', mode='w')
-HTML_HANDLER.setFormatter(HTML_FORMATTER)
-logging.basicConfig(level=logging.NOTSET, handlers=[STREAM_HANDLER, HTML_HANDLER])
-
-from logging_utils import log_args
+import logging_utils
 
 if platform.system().lower() == 'windows':
 	import ctypes
@@ -104,7 +92,7 @@ if platform.system().lower() == 'windows':
 		assert_win(window_handle)
 		return window_handle
 
-	@log_args
+	@logging_utils.log_args
 	def get_windowshot(window_handle):
 		"""Get an RGB screen capture of a window
 
@@ -227,7 +215,7 @@ if platform.system().lower() == 'windows':
 					return np.frombuffer(data, dtype='uint8').reshape(height, width, 4)[..., :3][..., ::-1]
 
 
-@log_args
+@logging_utils.log_args
 def get_window_handles(window_handle=None,
 	window_name=None,
 	window_class_name=None,
@@ -263,7 +251,7 @@ def get_window_handles(window_handle=None,
 			raise
 
 
-@log_args
+@logging_utils.log_args
 def get_screenshots(window_handles=None):
 	"""Function that seeks windows to snap/screenshot
 	Several optionals can be used to try to find windows more robustly -- a generator of screenshots is returned.
@@ -271,7 +259,7 @@ def get_screenshots(window_handles=None):
 	TODO: Separate the logic for which hwnds to check and yielding screenshots. Perhaps use sets ?
 	"""
 
-	@log_args
+	@logging_utils.log_args
 	def monitor_screenshots():
 		#[https://pypi.org/project/mss/]
 		with mss.mss() as multiple_screen_shot:
