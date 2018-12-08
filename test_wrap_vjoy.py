@@ -1,5 +1,5 @@
 import unittest
-from vjoywrap import *
+from wrap_vjoy import *
 
 
 class TestVJoyDevice(unittest.TestCase):

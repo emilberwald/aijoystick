@@ -1,7 +1,15 @@
 import inspect
 import logging
+import pathlib
+
 from functools import wraps
 import html
+
+
+def call_entry_to_string(decorated_function, *args, **kwargs):
+	func_args = inspect.signature(decorated_function).bind(*args, **kwargs).arguments
+	func_args_str = ','.join('{}={!r}'.format(*item) for item in func_args.items())
+	return f'[{decorated_function.__code__.co_filename}:{decorated_function.__code__.co_firstlineno}][{decorated_function.__module__}.{decorated_function.__qualname__}({func_args_str})]'
 
 
 def log_args(decorated_function):
@@ -11,12 +19,7 @@ def log_args(decorated_function):
 
 	@wraps(decorated_function)
 	def log_args_wrapper(*args, **kwargs):
-		func_args = inspect.signature(decorated_function).bind(*args, **kwargs).arguments
-		func_args_str = ','.join('{}={!r}'.format(*item) for item in func_args.items())
-		logging.debug(
-			html.escape(
-			f'[{decorated_function.__code__.co_filename}:{decorated_function.__code__.co_firstlineno}][{decorated_function.__module__}.{decorated_function.__qualname__}({func_args_str})]',
-			True))
+		logging.debug(html.escape(f'[ENTER]\n{call_entry_to_string(decorated_function,*args,**kwargs)}', True))
 		return decorated_function(*args, **kwargs)
 
 	return log_args_wrapper
@@ -25,14 +28,10 @@ def log_args(decorated_function):
 def log_call(decorated_function):
 	@wraps(decorated_function)
 	def log_call_wrapper(*args, **kwargs):
-		func_args = inspect.signature(decorated_function).bind(*args, **kwargs).arguments
-		func_args_str = ','.join('{}={!r}'.format(*item) for item in func_args.items())
-		logging.debug(
-			html.escape(
-			f'[{decorated_function.__code__.co_filename}:{decorated_function.__code__.co_firstlineno}][{decorated_function.__module__}.{decorated_function.__qualname__}({func_args_str})]',
-			True))
+		function_call = call_entry_to_string(decorated_function, *args, **kwargs)
+		logging.debug(html.escape(f'[ENTER]\n{function_call}', True))
 		retval = decorated_function(*args, **kwargs)
-		logging.debug(html.escape(f"-> {retval}", True))
+		logging.debug(html.escape(f"[EXIT]\n{function_call} -> {retval}", True))
 		return retval
 
 	return log_call_wrapper
@@ -53,6 +52,17 @@ else:
 		if frame.filename[0] != '<':  #libraries have '<' in filename
 			FILE_NAME = frame.filename
 			break
-HTML_HANDLER = logging.FileHandler(f'{FILE_NAME}_log.html', mode='w')
+
+
+class LogDirFileHandler(logging.FileHandler):
+	def __init__(self, filename, mode='a', encoding='utf-8', delay=0):
+		cwd = pathlib.Path().resolve()
+		logdir = (cwd / 'log')
+		logdir.mkdir(exist_ok=True)
+		logfile = logdir / pathlib.Path(filename).name
+		logging.FileHandler.__init__(self, str(logfile), mode, encoding, delay)
+
+
+HTML_HANDLER = LogDirFileHandler(f'{FILE_NAME}_log.html', mode='w')
 HTML_HANDLER.setFormatter(HTML_FORMATTER)
 logging.basicConfig(level=logging.NOTSET, handlers=[STREAM_HANDLER, HTML_HANDLER])
